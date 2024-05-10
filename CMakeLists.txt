@@ -11,11 +11,14 @@ FetchContent_MakeAvailable(SFML)
 
 set(${project}_SOURCES
 	main.cpp
+	app.cpp
 	Interface/Button.cpp
 	Interface/Textbox.cpp
 	ScheduleParser/ScheduleParser.cpp)
 
 set(${project}_HEADERS
+	app.hpp
+	Interface/Interface.hpp
 	Interface/Button.hpp
 	Interface/Textbox.hpp
 	ScheduleParser/ScheduleParser.hpp)
