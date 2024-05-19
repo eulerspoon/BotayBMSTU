@@ -12,8 +12,6 @@ FetchContent_MakeAvailable(SFML)
 set(${project}_SOURCES
 	main.cpp
 	app.cpp
-	Interface/Button.cpp
-	Interface/Textbox.cpp
 	ScheduleParser/ScheduleParser.cpp)
 
 set(${project}_HEADERS
