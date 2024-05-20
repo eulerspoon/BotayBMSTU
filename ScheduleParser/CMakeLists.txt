@@ -1,21 +1,32 @@
 cmake_minimum_required(VERSION 3.22.1)
+
 set(project "ScheduleParser")
 project(${project})
+
 set(CMAKE_CXX_STANDARD 17)
+
 set(${project}_SOURCES
-ScheduleParser.cpp)
+        ScheduleParser.cpp)
+
 set(${project}_HEADERS
-ScheduleParser.hpp)
+        ScheduleParser.hpp)
+
 set(${project}_SOURCE_LIST
-${${project}_SOURCES}
-${${project}_HEADERS})
+        ${${project}_SOURCES}
+        ${${project}_HEADERS})
+
 add_library(${project}
-STATIC
-${${project}_SOURCE_LIST})
+        STATIC
+        ${${project}_SOURCE_LIST})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/URL_Adress_For_Parser.txt
+${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
 find_package(OpenSSL REQUIRED)
+
 if (OPENSSL_FOUND)
   target_include_directories(${PROJECT_NAME} PUBLIC ${OPENSSL_INCLUDE_DIR})
-  
+
   target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
 
   message(STATUS "Found OpenSSL ${OPENSSL_VERSION}")
