@@ -13,12 +13,19 @@ namespace Interface {
     const int DAY_WIDTH = 2 * CLASS_FIELD_WIDTH + WEEK_DAY_WIDTH + 2 * CLASS_FIELD_INDENT;
     const int TIMES_WIDTH = WEEK_DAY_WIDTH;
 
+    const int DIALOG_CLASSES_NUMBER_X = 6;
+    const int DIALOG_CLASSES_NUMBER_Y = 14;
+    const int DIALOG_WIDTH = 4 + Interface::CLASS_FIELD_WIDTH * DIALOG_CLASSES_NUMBER_X + 
+    (DIALOG_CLASSES_NUMBER_X - 1) * Interface::CLASS_FIELD_INDENT;
+    const int DIALOG_HEIGHT = 4 + Interface::CLASS_FIELD_HEIGHT * DIALOG_CLASSES_NUMBER_Y + 
+    (DIALOG_CLASSES_NUMBER_Y - 1) * Interface::CLASS_FIELD_INDENT;
+
     class Button;
     class Textbox;
 
     class Day;
     class ClassField;
-
+    class Dialog;
 }
 
 enum Week {Monday, Tuesday, Wednesday, Thursday, Friday, Saturday};

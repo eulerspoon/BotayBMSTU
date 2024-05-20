@@ -15,7 +15,6 @@ public:
         button.setFillColor(bgColor);
     }
 
-
     void setPosition(sf::Vector2f pos) {
         button.setPosition(pos);
         // float xTextPos = (pos.x + button.getGlobalBounds().width / 2.5) - (text.getGlobalBounds().width / 2);
@@ -28,6 +27,8 @@ public:
 
         text.setPosition({xTextPos, yTextPos});
     }
+
+    void setTextPosition(sf::Vector2f pos) { text.setPosition(pos); }
 
     void draw(sf::RenderWindow& window) {
         window.draw(button);
@@ -46,7 +47,10 @@ public:
         return mouseX < buttonX2 && mouseX > buttonX && mouseY < buttonY2 && mouseY > buttonY;
     }
 
+    sf::Text getText() { return text; }
+
     void setText(std::wstring newText) { text.setString(newText); }
+    void setText(sf::Text newText) { text = newText; }
     void setSize(sf::Vector2f size) { button.setSize(size); }
     void setBgColor(sf::Color newBgColor) { button.setFillColor(newBgColor); }
     void setTextColor(sf::Color newTextColor) { text.setColor(newTextColor); }
