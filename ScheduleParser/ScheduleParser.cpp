@@ -31,6 +31,7 @@ std::vector<std::wstring> ScheduleParser::getClasses (int dayIndex, int classInd
     }
     return classes;
 }
+
 void ScheduleParser::https_get_request(const std::string& server, const std::string& path){
     std::string wrapAPIKey = "gHrkPDXxPpmDYelmcTNr8R7G1XRqiQ1u";
     try{
@@ -95,6 +96,7 @@ void ScheduleParser::https_get_request(const std::string& server, const std::str
             std::cerr << "Exception: " << e.what() << "\n";
     }
 }
+
 std::vector<std::string> ScheduleParser::split(const std::string &str, char delimiter){
     std::vector<std::string> tokens;
     std::string token;
@@ -113,8 +115,94 @@ std::vector<std::string> ScheduleParser::split(const std::string &str, char deli
     }
     return tokens;
 }
+
+void ScheduleParser::fill_weeks(std::vector<std::string>& ScheduleCH, std::vector<std::string>& ScheduleZN, std::vector<std::string> tokens, std::vector<std::string> days, std::vector<std::string> time){
+    for (int j = 0; j < 6; j++){
+        for (int i = 0; i < tokens.size(); i++){
+            if (tokens[i] == days[j]){
+                ScheduleCH.push_back(days[j]);
+                ScheduleZN.push_back(days[j]);
+                int begin = i + 4;
+                for (int k = 1; k < 8; k++){
+                    if (tokens[begin + 2] != time[k]){
+                        ScheduleCH.push_back(tokens[begin]);
+                        ScheduleZN.push_back(tokens[begin]);
+                        ScheduleCH.push_back(tokens[begin + 1]);
+                        ScheduleZN.push_back(tokens[begin + 2]);
+                        begin += 3;
+                    }
+                    else{
+                        ScheduleCH.push_back(tokens[begin]);
+                        ScheduleZN.push_back(tokens[begin]);
+                        ScheduleCH.push_back(tokens[begin + 1]);
+                        ScheduleZN.push_back(tokens[begin + 1]);
+                        begin += 2;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ScheduleParser::parse_schedule_to_txt(std::vector<std::string> ScheduleCH, std::vector<std::string> ScheduleZN, std::ofstream& schedule){
+    for (int i = 0; i < ScheduleCH.size(); i += 2){
+        if (i == 0) schedule << "Числитель" << "\n";
+        if(i % 15 == 0){
+            schedule << ScheduleCH[i] << "\n";
+            schedule << ScheduleCH[i + 1] << ' ' << ScheduleCH[i + 2] << "\n";
+            i++;
+        }
+        else{
+            schedule << ScheduleCH[i] << ' ' << ScheduleCH[i + 1] << "\n";
+        }
+    }
+    for (int i = 0; i < ScheduleZN.size(); i += 2){
+        if (i == 0) schedule << "Знаменатель" << "\n";
+        if(i % 15 == 0){
+            schedule << ScheduleZN[i] << "\n";
+            schedule << ScheduleZN[i + 1] << ' ' << ScheduleZN[i + 2] << "\n";
+            i++;
+        }
+        else{
+            schedule << ScheduleZN[i] << ' ' << ScheduleZN[i + 1] << "\n";
+        }
+    }
+}
+
+static void fill_days(std::vector<std::string>& days){
+    days.push_back("\"""Понедельник""\"");
+    days.push_back("\"""Вторник""\"");
+    days.push_back("\"""Среда""\"");
+    days.push_back("\"""Четверг""\"");
+    days.push_back("\"""Пятница""\"");
+    days.push_back("\"""Суббота""\"");
+}
+
+static void fill_time(std::vector<std::string>& time){
+    time.push_back("\"""8:3010:05""\"");
+    time.push_back("\"""10:1511:50""\"");
+    time.push_back("\"""12:0013:35""\"");
+    time.push_back("\"""13:5015:25""\"");
+    time.push_back("\"""15:4017:15""\"");
+    time.push_back("\"""17:2519:00""\"");
+    time.push_back("\"""19:1020:45""\"");
+}
+
+static void clear_schedule(){
+    std::ofstream schedule;
+    schedule.open("Schedule.txt", std::ios_base::trunc);
+    schedule.close();
+}
+
+static void clear_schedulebuf(){
+    std::ofstream schedulebuf;
+    schedulebuf.open("ScheduleBuf.txt", std::ios_base::trunc);
+    schedulebuf.close();
+}
+
 void ScheduleParser::make_schedule(){
     setlocale(0, "Russian");
+    clear_schedule();
     std::string server = "wrapapi.com";
     std::string path;
     std::ifstream file("URL_Adress_For_Parser.txt");
@@ -131,77 +219,19 @@ void ScheduleParser::make_schedule(){
         data = database[i];
         if (data.find("Расписание") != std::string::npos){    
             data = data.substr(data.find("Расписание ") - 1, data.find("stateToken") - data.find("Расписание") - 3);
-            schedulebuf.close();
             std::ofstream schedule("Schedule.txt", std::ios_base::app);
             std::vector<std::string> tokens = ScheduleParser::split(data, ',');
             std::vector<std::string> days;
             std::vector<std::string> time;
             std::vector<std::string> ScheduleCH;
             std::vector<std::string> ScheduleZN;
-            days.push_back("\"""Понедельник""\"");
-            days.push_back("\"""Вторник""\"");
-            days.push_back("\"""Среда""\"");
-            days.push_back("\"""Четверг""\"");
-            days.push_back("\"""Пятница""\"");
-            days.push_back("\"""Суббота""\"");
-            time.push_back("\"""8:3010:05""\"");
-            time.push_back("\"""10:1511:50""\"");
-            time.push_back("\"""12:0013:35""\"");
-            time.push_back("\"""13:5015:25""\"");
-            time.push_back("\"""15:4017:15""\"");
-            time.push_back("\"""17:2519:00""\"");
-            time.push_back("\"""19:1020:45""\"");
-            for (int j = 0; j < 6; j++){
-                for (int i = 0; i < tokens.size(); i++){
-                    if (tokens[i] == days[j]){
-                        ScheduleCH.push_back(days[j]);
-                        ScheduleZN.push_back(days[j]);
-                        int begin = i + 4;
-                        int shift = 0;
-                        for (int k = 1; k < 8; k++){
-                            if (tokens[begin + shift + 2] != time[k]){
-                                ScheduleCH.push_back(tokens[begin + shift]);
-                                ScheduleZN.push_back(tokens[begin + shift]);
-                                ScheduleCH.push_back(tokens[begin + shift + 1]);
-                                ScheduleZN.push_back(tokens[begin + shift + 2]);
-                                shift += 3;
-                            }
-                            else{
-                                ScheduleCH.push_back(tokens[begin + shift]);
-                                ScheduleZN.push_back(tokens[begin + shift]);
-                                ScheduleCH.push_back(tokens[begin + shift + 1]);
-                                ScheduleZN.push_back(tokens[begin + shift + 1]);
-
-                                shift += 2;
-                            }
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < ScheduleCH.size(); i += 2){
-                if (i == 0) schedule << "Числитель" << "\n";
-                if(i % 15 == 0){
-                    schedule << ScheduleCH[i] << "\n";
-                    schedule << ScheduleCH[i + 1] << ' ' << ScheduleCH[i + 2] << "\n";
-                    i++;
-                }
-                else{
-                    schedule << ScheduleCH[i] << ' ' << ScheduleCH[i + 1] << "\n";
-                }
-            }
-            for (int i = 0; i < ScheduleZN.size(); i += 2){
-                if (i == 0) schedule << "Знаменатель" << "\n";
-                if(i % 15 == 0){
-                    schedule << ScheduleZN[i] << "\n";
-                    schedule << ScheduleZN[i + 1] << ' ' << ScheduleZN[i + 2] << "\n";
-                    i++;
-                }
-                else{
-                    schedule << ScheduleZN[i] << ' ' << ScheduleZN[i + 1] << "\n";
-                }
-            }
+            fill_days(days);
+            fill_time(time);
+            ScheduleParser::fill_weeks(ScheduleCH, ScheduleZN, tokens, days, time);
+            ScheduleParser::parse_schedule_to_txt(ScheduleCH, ScheduleZN, schedule);
             schedule.close();
         }
     }
+    clear_schedulebuf();
     schedulebuf.close();
 }
