@@ -10,7 +10,10 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ScheduleParser/Schedule.txt
-        ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+        ${CMAKE_CURRENT_BINARY_DIR})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ScheduleParser/URL_Adress_For_Parser.txt
+${CMAKE_CURRENT_BINARY_DIR} COPYONLY) 
 
 set(${project}_SOURCES
 	main.cpp
