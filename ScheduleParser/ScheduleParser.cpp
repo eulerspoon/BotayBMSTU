@@ -1,5 +1,45 @@
 #include "ScheduleParser.hpp"
 
+class State{
+public:
+    virtual void handle(std::vector<std::string>& ScheduleCH, std::vector<std::string>& ScheduleZN, std::vector<std::string>& tokens, int& begin) = 0;
+};
+
+class ConcreteStateA : public State {
+public:
+    void handle(std::vector<std::string>& ScheduleCH, std::vector<std::string>& ScheduleZN, std::vector<std::string>& tokens, int& begin) override {
+        ScheduleCH.push_back(tokens[begin]);
+        ScheduleZN.push_back(tokens[begin]);
+        ScheduleCH.push_back(tokens[begin + 1]);
+        ScheduleZN.push_back(tokens[begin + 2]);
+        begin += 3;
+    }
+};
+
+class ConcreteStateB : public State {
+public:
+    void handle(std::vector<std::string>& ScheduleCH, std::vector<std::string>& ScheduleZN, std::vector<std::string>& tokens, int& begin) override {
+        ScheduleCH.push_back(tokens[begin]);
+        ScheduleZN.push_back(tokens[begin]);
+        ScheduleCH.push_back(tokens[begin + 1]);
+        ScheduleZN.push_back(tokens[begin + 1]);
+        begin += 2;
+    }
+};
+
+class Context{
+private:
+    State* state_;
+public:
+    Context() : state_(nullptr){};
+    Context(State* state) : state_(nullptr){ state_ = state; }
+    void set_state(State* s){
+        delete[] state_;
+        state_ = s;
+    }
+    void request(std::vector<std::string>& ScheduleCH, std::vector<std::string>& ScheduleZN, std::vector<std::string> tokens, int& begin){ state_->handle(ScheduleCH, ScheduleZN, tokens, begin); }
+};
+
 std::vector<std::wstring> ScheduleParser::getClasses (int dayIndex, int classIndex){
     std::vector<std::wstring> classes;
     std::vector<std::string> strclasses;
@@ -124,20 +164,15 @@ void ScheduleParser::fill_weeks(std::vector<std::string>& ScheduleCH, std::vecto
                 ScheduleZN.push_back(days[j]);
                 int begin = i + 4;
                 for (int k = 1; k < 8; k++){
+                    Context* context;
                     if (tokens[begin + 2] != time[k]){
-                        ScheduleCH.push_back(tokens[begin]);
-                        ScheduleZN.push_back(tokens[begin]);
-                        ScheduleCH.push_back(tokens[begin + 1]);
-                        ScheduleZN.push_back(tokens[begin + 2]);
-                        begin += 3;
+                        context = new Context(new ConcreteStateA);
                     }
                     else{
-                        ScheduleCH.push_back(tokens[begin]);
-                        ScheduleZN.push_back(tokens[begin]);
-                        ScheduleCH.push_back(tokens[begin + 1]);
-                        ScheduleZN.push_back(tokens[begin + 1]);
-                        begin += 2;
+                        context = new Context(new ConcreteStateB);
                     }
+                    context->request(ScheduleCH, ScheduleZN, tokens, begin);
+                    delete context;
                 }
             }
         }
