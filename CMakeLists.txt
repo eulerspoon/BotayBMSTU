@@ -9,6 +9,9 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ScheduleParser/Schedule.txt
+        ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
 set(${project}_SOURCES
 	main.cpp
 	app.cpp
@@ -23,10 +26,13 @@ set(${project}_HEADERS
 
 set(${project}_SOURCE_LIST    
         ${${project}_SOURCES}    
-        ${${project}_HEADERS})   
+        ${${project}_HEADERS})
+# add_subdirectory(ScheduleParser)
 
 add_executable(${project} ${${project}_SOURCE_LIST})
 
-target_link_libraries(${project} sfml-graphics)
+add_subdirectory(ScheduleParser)
+
+target_link_libraries(${project} sfml-graphics ScheduleParser)
 
 install(TARGETS ${project})

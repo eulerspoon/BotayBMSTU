@@ -109,6 +109,16 @@ public:
             sf::Color::Black);
     }
 
+    void setFont(sf::Font& font) {
+        for (int j = 0; j < 14; j++)
+			classes[j].setFont(font);
+		getWeekDay().setFont(font);
+		
+		for (int j = 0; j < 7; j++) getTime(j).setFont(font);
+		getCh().setFont(font);
+		getZn().setFont(font);
+    }
+
     Interface::ClassField& operator[] (int index) { return classes[index]; }
 
 private:
