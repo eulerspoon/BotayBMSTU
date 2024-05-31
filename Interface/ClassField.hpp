@@ -1,7 +1,6 @@
 #pragma once
 #include "Interface.hpp"
 
-
 class Interface::ClassField : public Interface::Button {
 public:
     ClassField(std::wstring subjectName = L"") : Interface::Button::Button(

@@ -30,7 +30,6 @@ set(${project}_HEADERS
 set(${project}_SOURCE_LIST    
         ${${project}_SOURCES}    
         ${${project}_HEADERS})
-# add_subdirectory(ScheduleParser)
 
 add_executable(${project} ${${project}_SOURCE_LIST})
 

@@ -29,7 +29,7 @@ void App::RunApp() {
 				case sf::Event::Closed:
 					window.close();
 				case sf::Event::MouseMoved:
-					App::processMouseMove(window, days, classChooseDialog);
+					processMouseMove(window, days, classChooseDialog);
 					break;
 				case sf::Event::MouseButtonPressed:
 					processMouseButtonPress(window, days, classChooseDialog);
